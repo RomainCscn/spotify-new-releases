@@ -2,7 +2,9 @@ import { query } from "./db.ts";
 import {
   Album,
   Artist,
+  Image,
   getArtistLastAlbum as getSpotifyArtistLastAlbum,
+  getArtistImages,
 } from "./spotify.ts";
 
 const getArtist = async (id: string) => {
@@ -15,16 +17,34 @@ const findArtistInAlbum = (
   artists: Array<Artist>,
 ): Artist | undefined => artists.find((artist) => artist.id === id);
 
-const insertArtist = async ({ id, name, url }: Artist, lastAlbum: Album) => {
+const insertArtist = async (
+  { id, name, url, images }: Artist,
+  lastAlbum: Album,
+) => {
   await query(
     "INSERT INTO artist (id, name, last_album, url) VALUES ($1, $2, $3, $4)",
     [id, name, lastAlbum.id, url],
   );
+
+  const sortedImages = images.sort((a: Image, b: Image) => a.height - b.height);
+  await query(
+    "INSERT INTO artist_image (artist_id, small, medium, large) VALUES ($1, $2, $3, $4)",
+    [
+      id,
+      sortedImages[0].url || "",
+      sortedImages[1].url || "",
+      sortedImages[2].url || "",
+    ],
+  );
 };
 
-const insertLastAlbum = async (
-  { name, id, releaseDate, url, artists }: Album,
-) => {
+const insertLastAlbum = async ({
+  name,
+  id,
+  releaseDate,
+  url,
+  artists,
+}: Album) => {
   await query(
     "INSERT INTO album (name, id, release_date, url, artists) VALUES ($1, $2, $3, $4, $5)",
     [
@@ -38,10 +58,17 @@ const insertLastAlbum = async (
 };
 
 const updateArtistLastAlbum = async (artistId: string, albumId: string) => {
-  await query(
-    "UPDATE artist SET last_album = $1 WHERE id = $2;",
-    [albumId, artistId],
+  await query("UPDATE artist SET last_album = $1 WHERE id = $2;", [
+    albumId,
+    artistId,
+  ]);
+};
+
+export const getAllArtists = async () => {
+  const result = await query(
+    "SELECT * FROM artist JOIN artist_image ON artist.id = artist_image.artist_id;",
   );
+  return result.rowsOfObjects();
 };
 
 export const addNewArtist = async (id: string) => {
@@ -52,8 +79,14 @@ export const addNewArtist = async (id: string) => {
 
   const lastSpotifyAlbum = await getSpotifyArtistLastAlbum(id);
   const artist = findArtistInAlbum(id, lastSpotifyAlbum.artists);
+
+  if (!artist) throw Error("Artist not found in album artists");
+
   await insertLastAlbum(lastSpotifyAlbum);
-  if (artist) await insertArtist(artist, lastSpotifyAlbum);
+
+  const imagesArtist = await getArtistImages(artist.id);
+  await insertArtist({ ...artist, images: imagesArtist }, lastSpotifyAlbum);
+
   return { artist, album: lastSpotifyAlbum };
 };
 
@@ -75,7 +108,8 @@ const getNewRelease = async (id: string) => {
   const lastDbAlbum = await getArtistLastAlbum(id);
 
   const isNewRelease = lastSpotifyAlbum.id !== lastDbAlbum.id &&
-    new Date(lastSpotifyAlbum.releaseDate) > new Date(lastDbAlbum.release_date);
+    new Date(lastSpotifyAlbum.releaseDate) >
+      new Date(lastDbAlbum.release_date);
 
   return {
     isNewRelease: isNewRelease,

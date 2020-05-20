@@ -4,10 +4,24 @@ interface Token {
   access_token: string;
 }
 
+export interface Image {
+  height: number;
+  url: string;
+  width: number;
+}
+
+interface ArtistFromSpotify {
+  id: string;
+  name: string;
+  external_urls: { spotify: string };
+  images: Image[];
+}
+
 export interface Artist {
   id: string;
   name: string;
   url: string;
+  images: Image[];
 }
 
 export interface Album {
@@ -55,7 +69,7 @@ export const getArtistLastAlbum = async (artistId: string): Promise<Album> => {
   } = albums.items[0];
 
   return {
-    artists: artists.map((artist: any) => ({
+    artists: artists.map((artist: ArtistFromSpotify) => ({
       id: artist.id,
       name: artist.name,
       url: artist.external_urls.spotify,
@@ -65,4 +79,18 @@ export const getArtistLastAlbum = async (artistId: string): Promise<Album> => {
     releaseDate,
     url: externalUrls.spotify,
   };
+};
+
+export const getArtistImages = async (
+  artistId: string,
+): Promise<Image[]> => {
+  const res = await fetch(`https://api.spotify.com/v1/artists/${artistId}`, {
+    headers: {
+      Authorization: `Bearer ${await getToken()}`,
+    },
+  });
+
+  const artist: ArtistFromSpotify = await res.json();
+
+  return artist.images;
 };
