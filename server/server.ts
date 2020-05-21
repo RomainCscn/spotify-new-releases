@@ -4,7 +4,11 @@ import {
   RouterContext,
 } from "https://deno.land/x/oak/mod.ts";
 
-import { addNewArtist, checkAllNewRelease, getAllArtists } from "./artist.ts";
+import {
+  addNewArtist,
+  checkAllNewRelease,
+  getAllArtistsAndLastRelease,
+} from "./artist.ts";
 
 const router = new Router();
 
@@ -31,7 +35,7 @@ router
   })
   .get("/artists", async (context: RouterContext) => {
     try {
-      const artists = await getAllArtists();
+      const artists = await getAllArtistsAndLastRelease();
       context.response.headers.set(
         "Access-Control-Allow-Origin",
         "http://localhost:3000",

@@ -1,13 +1,8 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
+import { Album, Image } from "./types.ts";
 
 interface Token {
   access_token: string;
-}
-
-export interface Image {
-  height: number;
-  url: string;
-  width: number;
 }
 
 interface ArtistFromSpotify {
@@ -15,21 +10,6 @@ interface ArtistFromSpotify {
   name: string;
   external_urls: { spotify: string };
   images: Image[];
-}
-
-export interface Artist {
-  id: string;
-  name: string;
-  url: string;
-  images: Image[];
-}
-
-export interface Album {
-  id: string;
-  artists: Array<Artist>;
-  name: string;
-  releaseDate: string;
-  url: string;
 }
 
 const getToken = async (): Promise<string> => {
@@ -66,6 +46,7 @@ export const getArtistLastAlbum = async (artistId: string): Promise<Album> => {
     release_date: releaseDate,
     artists,
     external_urls: externalUrls,
+    images,
   } = albums.items[0];
 
   return {
@@ -76,6 +57,7 @@ export const getArtistLastAlbum = async (artistId: string): Promise<Album> => {
     })),
     id,
     name,
+    image: images.sort((a: Image, b: Image) => b.height - a.height)[0].url,
     releaseDate,
     url: externalUrls.spotify,
   };

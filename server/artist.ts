@@ -1,11 +1,24 @@
 import { query } from "./db.ts";
 import {
-  Album,
-  Artist,
-  Image,
   getArtistLastAlbum as getSpotifyArtistLastAlbum,
   getArtistImages,
 } from "./spotify.ts";
+import { Artist, Album, Image } from "./types.ts";
+
+const formatArtistAndAlbum = (row: any) => {
+  return {
+    artist: {
+      name: row[0],
+      url: row[1],
+      image: row[2],
+    },
+    lastAlbum: {
+      name: row[3],
+      url: row[4],
+      image: row[5],
+    },
+  };
+};
 
 const getArtist = async (id: string) => {
   const result = await query("SELECT * FROM artist WHERE id = $1;", [id]);
@@ -18,23 +31,12 @@ const findArtistInAlbum = (
 ): Artist | undefined => artists.find((artist) => artist.id === id);
 
 const insertArtist = async (
-  { id, name, url, images }: Artist,
+  { id, name, url, image }: Artist,
   lastAlbum: Album,
 ) => {
   await query(
-    "INSERT INTO artist (id, name, last_album, url) VALUES ($1, $2, $3, $4)",
-    [id, name, lastAlbum.id, url],
-  );
-
-  const sortedImages = images.sort((a: Image, b: Image) => a.height - b.height);
-  await query(
-    "INSERT INTO artist_image (artist_id, small, medium, large) VALUES ($1, $2, $3, $4)",
-    [
-      id,
-      sortedImages[0].url || "",
-      sortedImages[1].url || "",
-      sortedImages[2].url || "",
-    ],
+    "INSERT INTO artist (id, name, last_album, url, image) VALUES ($1, $2, $3, $4, $5)",
+    [id, name, lastAlbum.id, url, image],
   );
 };
 
@@ -44,15 +46,17 @@ const insertLastAlbum = async ({
   releaseDate,
   url,
   artists,
+  image,
 }: Album) => {
   await query(
-    "INSERT INTO album (name, id, release_date, url, artists) VALUES ($1, $2, $3, $4, $5)",
+    "INSERT INTO album (name, id, release_date, url, artists, image) VALUES ($1, $2, $3, $4, $5, $6)",
     [
       name,
       id,
       releaseDate,
       url,
       `{${artists.map((artist) => artist.id).toString()}}`,
+      image,
     ],
   );
 };
@@ -66,9 +70,17 @@ const updateArtistLastAlbum = async (artistId: string, albumId: string) => {
 
 export const getAllArtists = async () => {
   const result = await query(
-    "SELECT * FROM artist JOIN artist_image ON artist.id = artist_image.artist_id;",
+    "SELECT * FROM artist;",
   );
   return result.rowsOfObjects();
+};
+
+export const getAllArtistsAndLastRelease = async () => {
+  const result = await query(
+    "SELECT artist.name, artist.url, artist.image, album.name, album.release_date, album.image FROM artist JOIN album ON artist.last_album = album.id;",
+  );
+
+  return result.rows.map((row: any) => formatArtistAndAlbum(row));
 };
 
 export const addNewArtist = async (id: string) => {
@@ -85,7 +97,14 @@ export const addNewArtist = async (id: string) => {
   await insertLastAlbum(lastSpotifyAlbum);
 
   const imagesArtist = await getArtistImages(artist.id);
-  await insertArtist({ ...artist, images: imagesArtist }, lastSpotifyAlbum);
+  const sortedImages = imagesArtist.sort((a: Image, b: Image) =>
+    b.height - a.height
+  );
+
+  await insertArtist(
+    { ...artist, image: sortedImages[0].url },
+    lastSpotifyAlbum,
+  );
 
   return { artist, album: lastSpotifyAlbum };
 };
