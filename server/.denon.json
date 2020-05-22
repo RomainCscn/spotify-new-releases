@@ -1,0 +1,23 @@
+{
+  "files": [
+    "server.ts"
+  ],
+  "quiet": false,
+  "debug": true,
+  "fullscreen": true,
+  "extensions": [
+    ".ts",
+    ".json"
+  ],
+  "interval": 500,
+  "deno_args": [
+    "--allow-net",
+    "--allow-read"
+  ],
+  "execute": {
+    ".ts": [
+      "deno",
+      "run"
+    ]
+  }
+}
