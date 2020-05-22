@@ -36,10 +36,6 @@ router
   .get("/artists", async (context: RouterContext) => {
     try {
       const artists = await getAllArtistsAndLastRelease();
-      context.response.headers.set(
-        "Access-Control-Allow-Origin",
-        "http://localhost:3000",
-      );
       context.response.body = artists;
     } catch (e) {
       context.response.status = 400;

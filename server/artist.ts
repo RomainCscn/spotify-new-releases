@@ -1,4 +1,5 @@
 import { query } from "./db.ts";
+import { formatMail, sendMail } from "./mail.ts";
 import {
   getArtistLastAlbum as getSpotifyArtistLastAlbum,
   getArtistImages,
@@ -138,14 +139,23 @@ const getNewRelease = async (id: string) => {
 
 export const checkAllNewRelease = async () => {
   const updatedArtist = [];
-  const result = await query("SELECT id, name FROM artist;");
-  for (const { id, name } of result.rowsOfObjects()) {
+  const result = await query("SELECT id, image, name, url FROM artist;");
+  for (const { id, image, name, url } of result.rowsOfObjects()) {
     const newRelease = await getNewRelease(id);
     if (newRelease.isNewRelease) {
-      updatedArtist.push({ id, name });
+      updatedArtist.push(
+        { artist: { image, name, url }, lastAlbum: newRelease.lastRelease },
+      );
       await insertLastAlbum(newRelease.lastRelease);
       await updateArtistLastAlbum(id, newRelease.lastRelease.id);
     }
+  }
+
+  if (updatedArtist.length > 0) {
+    sendMail(
+      "New releases from your favorite artists!",
+      formatMail(updatedArtist),
+    );
   }
 
   return updatedArtist;
