@@ -4,9 +4,9 @@ import {
   getArtistLastAlbum as getSpotifyArtistLastAlbum,
   getArtistImages,
 } from "./spotify.ts";
-import { Artist, Album, Image } from "./types.ts";
+import { Artist, ArtistAndLastAlbum, Album, Image } from "./types.ts";
 
-const formatArtistAndAlbum = (row: any) => {
+const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
   return {
     artist: {
       name: row[0],
@@ -21,9 +21,24 @@ const formatArtistAndAlbum = (row: any) => {
   };
 };
 
-const getArtist = async (id: string) => {
-  const result = await query("SELECT * FROM artist WHERE id = $1;", [id]);
-  return result.rowsOfObjects()[0];
+const getArtistName = async (id: string): Promise<Pick<Artist, "name">> => {
+  const result = await query("SELECT name FROM artist WHERE id = $1;", [id]);
+
+  return { name: result.rowsOfObjects()[0].name };
+};
+
+const getArtistLastAlbum = async (
+  id: string,
+): Promise<Pick<Album, "id" | "releaseDate">> => {
+  const result = await query(
+    "SELECT album.id, album.release_date FROM album JOIN artist ON album.id = artist.last_album WHERE artist.id = $1;",
+    [id],
+  );
+
+  return {
+    id: result.rowsOfObjects()[0].id,
+    releaseDate: result.rowsOfObjects()[0].release_date,
+  };
 };
 
 const findArtistInAlbum = (
@@ -69,14 +84,35 @@ const updateArtistLastAlbum = async (artistId: string, albumId: string) => {
   ]);
 };
 
-export const getAllArtists = async () => {
+const getNewRelease = async (id: string) => {
+  const artistInDb = await getArtistName(id);
+  if (!artistInDb) {
+    throw Error(`Artist with id ${id} not found`);
+  }
+
+  const lastSpotifyAlbum = await getSpotifyArtistLastAlbum(id);
+  const lastDbAlbum = await getArtistLastAlbum(id);
+
+  const isNewRelease = lastSpotifyAlbum.id !== lastDbAlbum.id &&
+    new Date(lastSpotifyAlbum.releaseDate) >
+      new Date(lastDbAlbum.releaseDate);
+
+  return {
+    isNewRelease: isNewRelease,
+    lastRelease: lastSpotifyAlbum,
+  };
+};
+
+export const getAllArtists = async (): Promise<Partial<Artist>[]> => {
   const result = await query(
     "SELECT * FROM artist;",
   );
   return result.rowsOfObjects();
 };
 
-export const getAllArtistsAndLastRelease = async () => {
+export const getAllArtistsAndLastRelease = async (): Promise<
+  Partial<ArtistAndLastAlbum>[]
+> => {
   const result = await query(
     "SELECT artist.name, artist.url, artist.image, album.name, album.release_date, album.image FROM artist JOIN album ON artist.last_album = album.id;",
   );
@@ -85,7 +121,7 @@ export const getAllArtistsAndLastRelease = async () => {
 };
 
 export const addNewArtist = async (id: string) => {
-  const artistInDb = await getArtist(id);
+  const artistInDb: Pick<Artist, "name"> = await getArtistName(id);
   if (artistInDb) {
     throw Error(`Artist ${artistInDb.name} already exists`);
   }
@@ -106,40 +142,12 @@ export const addNewArtist = async (id: string) => {
     { ...artist, image: sortedImages[0].url },
     lastSpotifyAlbum,
   );
-
-  return { artist, album: lastSpotifyAlbum };
-};
-
-const getArtistLastAlbum = async (id: string) => {
-  const result = await query(
-    "SELECT album.id, album.release_date FROM album JOIN artist ON album.id = artist.last_album WHERE artist.id = $1;",
-    [id],
-  );
-  return result.rowsOfObjects()[0];
-};
-
-const getNewRelease = async (id: string) => {
-  const artistInDb = await getArtist(id);
-  if (!artistInDb) {
-    throw Error(`Artist with id ${id} not found`);
-  }
-
-  const lastSpotifyAlbum = await getSpotifyArtistLastAlbum(id);
-  const lastDbAlbum = await getArtistLastAlbum(id);
-
-  const isNewRelease = lastSpotifyAlbum.id !== lastDbAlbum.id &&
-    new Date(lastSpotifyAlbum.releaseDate) >
-      new Date(lastDbAlbum.release_date);
-
-  return {
-    isNewRelease: isNewRelease,
-    lastRelease: lastSpotifyAlbum,
-  };
 };
 
 export const checkAllNewRelease = async () => {
   const updatedArtist = [];
   const result = await query("SELECT id, image, name, url FROM artist;");
+
   for (const { id, image, name, url } of result.rowsOfObjects()) {
     const newRelease = await getNewRelease(id);
     if (newRelease.isNewRelease) {

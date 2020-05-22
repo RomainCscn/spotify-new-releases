@@ -19,3 +19,8 @@ export interface Album {
   url: string;
   image: string;
 }
+
+export interface ArtistAndLastAlbum {
+  artist: Pick<Artist, "image" | "name" | "url">;
+  lastAlbum: Pick<Album, "image" | "name" | "url">;
+}
