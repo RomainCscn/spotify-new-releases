@@ -8,11 +8,9 @@ import { Artist, ArtistAndLastAlbum, Album, Image } from "./types.ts";
 
 const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
   return {
-    artist: {
-      name: row[0],
-      url: row[1],
-      image: row[2],
-    },
+    name: row[0],
+    url: row[1],
+    image: row[2],
     lastAlbum: {
       name: row[3],
       url: row[4],
@@ -21,10 +19,14 @@ const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
   };
 };
 
-const getArtistName = async (id: string): Promise<Pick<Artist, "name">> => {
+const getArtistName = async (
+  id: string,
+): Promise<Pick<Artist, "name"> | null> => {
   const result = await query("SELECT name FROM artist WHERE id = $1;", [id]);
 
-  return { name: result.rowsOfObjects()[0].name };
+  return result.rowsOfObjects().length > 0
+    ? { name: result.rowsOfObjects()[0].name }
+    : null;
 };
 
 const getArtistLastAlbum = async (
@@ -121,7 +123,7 @@ export const getAllArtistsAndLastRelease = async (): Promise<
 };
 
 export const addNewArtist = async (id: string) => {
-  const artistInDb: Pick<Artist, "name"> = await getArtistName(id);
+  const artistInDb: Pick<Artist, "name"> | null = await getArtistName(id);
   if (artistInDb) {
     throw Error(`Artist ${artistInDb.name} already exists`);
   }
