@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-const Search = () => {
+const Search = ({
+  setShouldRefresh,
+}: {
+  setShouldRefresh: (shouldRefresh: boolean) => void;
+}) => {
   const [searchedArtists, setSearchedArtists] = useState([]);
 
   const searchArtists = async (query: string) => {
@@ -17,14 +21,19 @@ const Search = () => {
   };
 
   const addArtist = async (id: string) => {
-    await fetch('http://0.0.0.0:8000/artist', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id }),
-    });
+    try {
+      await fetch('http://0.0.0.0:8000/artist', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+      setShouldRefresh(true);
+    } catch (e) {
+      console.log('Cannot add artist');
+    }
   };
 
   return (
