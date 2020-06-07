@@ -1,6 +1,12 @@
 import React, { useState, ChangeEvent, KeyboardEvent } from 'react';
 
-const Artist = ({ addArtist, artist }: any) => (
+const Artist = ({
+  addArtist,
+  artist,
+}: {
+  addArtist: (id: string) => void;
+  artist: any;
+}) => (
   <div
     className='flex items-center cursor-pointer mb-2'
     onClick={() => addArtist(artist.id)}
@@ -20,8 +26,10 @@ const Artist = ({ addArtist, artist }: any) => (
 );
 
 const Search = ({
+  className,
   setShouldRefresh,
 }: {
+  className?: string;
   setShouldRefresh: (shouldRefresh: boolean) => void;
 }) => {
   const [query, setQuery] = useState('');
@@ -70,7 +78,7 @@ const Search = ({
   };
 
   return (
-    <div>
+    <div className={className}>
       <div className=''>Add an artist</div>
       <input
         className='border-gray-400 border-2 rounded-md h-10 outline-none px-2'

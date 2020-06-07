@@ -23,8 +23,9 @@ const App = () => {
         Add artists to your collection to be informed when they release a new
         album
       </div>
-      <Search setShouldRefresh={setShouldRefresh} />
-      <div style={{ display: 'flex' }}>
+      <Search className='mb-16' setShouldRefresh={setShouldRefresh} />
+      <div>
+        <div className='text-xl'>Your library</div>
         {libraryArtists.length > 0 &&
           libraryArtists.map((artist: Artist) => (
             <LibraryArtist

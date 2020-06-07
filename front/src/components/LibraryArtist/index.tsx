@@ -33,15 +33,26 @@ export const LibraryArtist = ({
   };
 
   return (
-    <div>
-      <div onClick={() => deleteArtist()}>Remove</div>
-      <div>
-        <img width='100' src={image} alt={name} />
-        <a href={url}>{name}</a>
+    <div className='bg-gray-200 mb-4'>
+      <div className='flex items-center'>
+        <a href={url}>
+          <img className='mr-2' width='100' src={image} alt={name} />
+          {name}
+        </a>
       </div>
-      <div>
-        <img width='100' src={lastAlbum.image} alt={lastAlbum.name} />
-        <a href={lastAlbum.url}>{lastAlbum.name}</a>
+      <div className='flex items-center'>
+        <a href={lastAlbum.url}>
+          <img
+            className='mr-2'
+            width='100'
+            src={lastAlbum.image}
+            alt={lastAlbum.name}
+          />
+          {lastAlbum.name}
+        </a>
+      </div>
+      <div className='cursor-pointer' onClick={deleteArtist}>
+        Remove
       </div>
     </div>
   );
