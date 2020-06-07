@@ -25,16 +25,14 @@ router
       await addNewArtist(id);
       context.response.status = 200;
     } catch (e) {
-      context.response.status = 400;
-      context.response.body = { message: e.message };
+      context.throw(400, e.message);
     }
   })
   .get("/new-releases", async (context: RouterContext) => {
     try {
       context.response.body = await checkAllNewRelease();
     } catch (e) {
-      context.response.status = 400;
-      context.response.body = { message: e.message };
+      context.throw(400, e.message);
     }
   })
   .get("/artists", async (context: RouterContext) => {
@@ -42,8 +40,7 @@ router
       const artists = await getAllArtistsAndLastRelease();
       context.response.body = artists;
     } catch (e) {
-      context.response.status = 400;
-      context.response.body = { message: e.message };
+      context.throw(400, e.message);
     }
   })
   .get("/search", async (context: RouterContext) => {
@@ -53,8 +50,7 @@ router
       );
       context.response.body = artists;
     } catch (e) {
-      context.response.status = 400;
-      context.response.body = { message: e.message };
+      context.throw(400, e.message);
     }
   });
 
