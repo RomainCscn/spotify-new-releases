@@ -71,7 +71,7 @@ export const getArtistImages = async (
 
 export const getSearchedArtists = async (query: string) => {
   const res = await fetch(
-    `https://api.spotify.com/v1/search?q=${query}&type=artist&market=FR&limit=10`,
+    `https://api.spotify.com/v1/search?q=${query}&type=artist&limit=10`,
     {
       headers: {
         Authorization: `Bearer ${await getToken()}`,
