@@ -18,7 +18,11 @@ const App = () => {
   }, [shouldRefresh]);
 
   return (
-    <div>
+    <div className='container mx-auto'>
+      <div className='text-2xl mb-8'>
+        Add artists to your collection to be informed when they release a new
+        album
+      </div>
       <Search setShouldRefresh={setShouldRefresh} />
       <div style={{ display: 'flex' }}>
         {libraryArtists.length > 0 &&
