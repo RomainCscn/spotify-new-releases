@@ -9,6 +9,7 @@ import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import {
   addNewArtist,
   checkAllNewRelease,
+  deleteArtist,
   getAllArtistsAndLastRelease,
 } from "./artist.ts";
 
@@ -24,6 +25,17 @@ router
     try {
       await addNewArtist(id);
       context.response.status = 200;
+    } catch (e) {
+      context.throw(400, e.message);
+    }
+  })
+  .delete("/artist", async (context: RouterContext) => {
+    let {
+      value: { id },
+    } = await context.request.body();
+    try {
+      await deleteArtist(id);
+      context.response.status = 204;
     } catch (e) {
       context.throw(400, e.message);
     }

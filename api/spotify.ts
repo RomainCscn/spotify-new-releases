@@ -1,15 +1,9 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
-import { Album, Image } from "./types.ts";
+import { ArtistFromSpotify, Album, Image } from "./types.ts";
+import { findArtistInAlbum } from "./utils.ts";
 
 interface Token {
   access_token: string;
-}
-
-interface ArtistFromSpotify {
-  id: string;
-  name: string;
-  external_urls: { spotify: string };
-  images: Image[];
 }
 
 const getToken = async (): Promise<string> => {
@@ -29,7 +23,9 @@ const getToken = async (): Promise<string> => {
   return token;
 };
 
-export const getArtistLastAlbum = async (artistId: string): Promise<Album> => {
+export const getArtistLastAlbum = async (
+  artistId: string,
+): Promise<Album> => {
   const res = await fetch(
     `https://api.spotify.com/v1/artists/${artistId}/albums?limit=1&include_groups=album&country=fr`,
     {
@@ -50,16 +46,12 @@ export const getArtistLastAlbum = async (artistId: string): Promise<Album> => {
   } = albums.items[0];
 
   return {
-    artists: artists.map((artist: ArtistFromSpotify) => ({
-      id: artist.id,
-      name: artist.name,
-      url: artist.external_urls.spotify,
-    })),
     id,
     name,
     image: images.sort((a: Image, b: Image) => b.height - a.height)[0].url,
     releaseDate,
     url: externalUrls.spotify,
+    artist: findArtistInAlbum(artistId, artists),
   };
 };
 

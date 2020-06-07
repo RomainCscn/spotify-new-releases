@@ -8,16 +8,27 @@ export interface Artist {
   id: string;
   name: string;
   url: string;
-  image: string;
+  image?: string;
+}
+
+export interface ArtistFromSpotify {
+  id: string;
+  name: string;
+  external_urls: { spotify: string };
+  images: Image[];
 }
 
 export interface Album {
   id: string;
-  artists: Array<Artist>;
+  artist: Artist;
   name: string;
   releaseDate: string;
   url: string;
   image: string;
+}
+
+export interface DbAlbum extends Omit<Album, "artist"> {
+  artist: string;
 }
 
 export interface ArtistAndLastAlbum {

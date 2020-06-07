@@ -4,7 +4,7 @@ import {
   getArtistLastAlbum as getSpotifyArtistLastAlbum,
   getArtistImages,
 } from "./spotify.ts";
-import { Artist, ArtistAndLastAlbum, Album, Image } from "./types.ts";
+import { Artist, ArtistAndLastAlbum, Album, DbAlbum, Image } from "./types.ts";
 
 const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
   return {
@@ -19,14 +19,22 @@ const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
   };
 };
 
-const getArtistName = async (
+const getArtist = async (
   id: string,
-): Promise<Pick<Artist, "name"> | null> => {
-  const result = await query("SELECT name FROM artist WHERE id = $1;", [id]);
-
-  return result.rowsOfObjects().length > 0
-    ? { name: result.rowsOfObjects()[0].name }
+): Promise<Artist | null> => {
+  const result = await query("SELECT * FROM artist WHERE id = $1;", [id]);
+  const artist = result.rowsOfObjects().length > 0
+    ? result.rowsOfObjects()[0]
     : null;
+
+  if (!artist) return null;
+
+  return {
+    id: artist.id,
+    name: artist.name,
+    image: artist.name,
+    url: artist.url,
+  };
 };
 
 const getArtistLastAlbum = async (
@@ -43,18 +51,13 @@ const getArtistLastAlbum = async (
   };
 };
 
-const findArtistInAlbum = (
-  id: string,
-  artists: Array<Artist>,
-): Artist | undefined => artists.find((artist) => artist.id === id);
-
 const insertArtist = async (
   { id, name, url, image }: Artist,
   lastAlbum: Album,
 ) => {
   await query(
     "INSERT INTO artist (id, name, last_album, url, image) VALUES ($1, $2, $3, $4, $5)",
-    [id, name, lastAlbum.id, url, image],
+    [id, name, lastAlbum.id, url, image!],
   );
 };
 
@@ -63,17 +66,17 @@ const insertLastAlbum = async ({
   id,
   releaseDate,
   url,
-  artists,
+  artist: artistId,
   image,
-}: Album) => {
+}: DbAlbum) => {
   await query(
-    "INSERT INTO album (name, id, release_date, url, artists, image) VALUES ($1, $2, $3, $4, $5, $6)",
+    "INSERT INTO album (name, id, release_date, url, artist, image) VALUES ($1, $2, $3, $4, $5, $6)",
     [
       name,
       id,
       releaseDate,
       url,
-      `{${artists.map((artist) => artist.id).toString()}}`,
+      artistId,
       image,
     ],
   );
@@ -86,8 +89,10 @@ const updateArtistLastAlbum = async (artistId: string, albumId: string) => {
   ]);
 };
 
-const getNewRelease = async (id: string) => {
-  const artistInDb = await getArtistName(id);
+const getNewRelease = async (
+  id: string,
+): Promise<{ isNewRelease: boolean; lastRelease: DbAlbum }> => {
+  const artistInDb = await getArtist(id);
   if (!artistInDb) {
     throw Error(`Artist with id ${id} not found`);
   }
@@ -101,7 +106,7 @@ const getNewRelease = async (id: string) => {
 
   return {
     isNewRelease: isNewRelease,
-    lastRelease: lastSpotifyAlbum,
+    lastRelease: { ...lastSpotifyAlbum, artist: lastSpotifyAlbum.artist.id },
   };
 };
 
@@ -123,26 +128,24 @@ export const getAllArtistsAndLastRelease = async (): Promise<
 };
 
 export const addNewArtist = async (id: string) => {
-  const artistInDb: Pick<Artist, "name"> | null = await getArtistName(id);
+  const artistInDb: Artist | null = await getArtist(id);
   if (artistInDb) {
     throw Error(`Artist ${artistInDb.name} already exists`);
   }
 
   const lastSpotifyAlbum = await getSpotifyArtistLastAlbum(id);
-  const artist = findArtistInAlbum(id, lastSpotifyAlbum.artists);
-
-  if (!artist) throw Error("Artist not found in album artists");
-
-  await insertLastAlbum(lastSpotifyAlbum);
-
-  const imagesArtist = await getArtistImages(artist.id);
+  const imagesArtist = await getArtistImages(lastSpotifyAlbum.artist.id);
   const sortedImages = imagesArtist.sort((a: Image, b: Image) =>
     b.height - a.height
   );
 
   await insertArtist(
-    { ...artist, image: sortedImages[0].url },
+    { ...lastSpotifyAlbum.artist, image: sortedImages[0].url },
     lastSpotifyAlbum,
+  );
+
+  await insertLastAlbum(
+    { ...lastSpotifyAlbum, artist: id },
   );
 };
 
@@ -169,4 +172,11 @@ export const checkAllNewRelease = async () => {
   }
 
   return updatedArtist;
+};
+
+export const deleteArtist = async (id: string) => {
+  await query(
+    "DELETE FROM artist WHERE artist.id = $1;",
+    [id],
+  );
 };
