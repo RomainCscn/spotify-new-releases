@@ -32,8 +32,9 @@ export interface DbAlbum extends Omit<Album, "artist"> {
 }
 
 export interface ArtistAndLastAlbum {
+  id: string;
   image: string;
   name: string;
   url: string;
-  lastAlbum: Pick<Album, "image" | "name" | "url">;
+  lastAlbum: Pick<Album, "id" | "image" | "name" | "url">;
 }

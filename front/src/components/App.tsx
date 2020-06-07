@@ -23,7 +23,10 @@ const App = () => {
       <div style={{ display: 'flex' }}>
         {libraryArtists.length > 0 &&
           libraryArtists.map((artist: Artist) => (
-            <LibraryArtist artist={artist} />
+            <LibraryArtist
+              setShouldRefresh={setShouldRefresh}
+              artist={artist}
+            />
           ))}
       </div>
     </div>

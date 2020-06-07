@@ -8,13 +8,15 @@ import { Artist, ArtistAndLastAlbum, Album, DbAlbum, Image } from "./types.ts";
 
 const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
   return {
-    name: row[0],
-    url: row[1],
-    image: row[2],
+    id: row[0],
+    name: row[1],
+    url: row[2],
+    image: row[3],
     lastAlbum: {
-      name: row[3],
-      url: row[4],
-      image: row[5],
+      id: row[4],
+      name: row[5],
+      url: row[6],
+      image: row[7],
     },
   };
 };
@@ -121,7 +123,7 @@ export const getAllArtistsAndLastRelease = async (): Promise<
   Partial<ArtistAndLastAlbum>[]
 > => {
   const result = await query(
-    "SELECT artist.name, artist.url, artist.image, album.name, album.release_date, album.image FROM artist JOIN album ON artist.last_album = album.id;",
+    "SELECT artist.id, artist.name, artist.url, artist.image, album.id, album.name, album.release_date, album.image FROM artist JOIN album ON artist.last_album = album.id;",
   );
 
   return result.rows.map((row: any) => formatArtistAndAlbum(row));
