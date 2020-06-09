@@ -36,5 +36,5 @@ export interface ArtistAndLastAlbum {
   image: string;
   name: string;
   url: string;
-  lastAlbum: Pick<Album, "id" | "image" | "name" | "url">;
+  lastAlbum: Omit<Album, "artist">;
 }

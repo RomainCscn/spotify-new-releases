@@ -16,7 +16,8 @@ const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
       id: row[4],
       name: row[5],
       url: row[6],
-      image: row[7],
+      releaseDate: row[7],
+      image: row[8],
     },
   };
 };
@@ -123,7 +124,7 @@ export const getAllArtistsAndLastRelease = async (): Promise<
   Partial<ArtistAndLastAlbum>[]
 > => {
   const result = await query(
-    "SELECT artist.id, artist.name, artist.url, artist.image, album.id, album.name, album.release_date, album.image FROM artist JOIN album ON artist.last_album = album.id;",
+    "SELECT artist.id, artist.name, artist.url, artist.image, album.id, album.name, album.url, album.release_date, album.image FROM artist JOIN album ON artist.last_album = album.id;",
   );
 
   return result.rows.map((row: any) => formatArtistAndAlbum(row));
