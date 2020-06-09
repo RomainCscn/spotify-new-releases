@@ -14345,6 +14345,7 @@ video {
 
 body {
   background-color: rgb(45, 55, 72);
+  color: rgb(247, 250, 252);
 }
 
 @media (min-width: 640px) {

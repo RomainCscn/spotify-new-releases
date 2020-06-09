@@ -8,7 +8,7 @@ const Artist = ({
   artist: any;
 }) => (
   <div
-    className='flex items-center cursor-pointer mb-2'
+    className='flex items-center cursor-pointer mb-2 w-1/3'
     onClick={() => addArtist(artist.id)}
     key={artist.id}
   >
@@ -19,7 +19,7 @@ const Artist = ({
         src={artist.images[artist.images.length - 1].url}
       />
     ) : (
-      <div className='h-16 w-16  mr-2 bg-gray-200'></div>
+      <div className='h-16 w-16 mr-2 bg-gray-200'></div>
     )}
     {artist.name}
   </div>
@@ -78,16 +78,16 @@ const Search = ({
   };
 
   return (
-    <div className={className}>
+    <div className={`${className} relative`}>
       <div className=''>Add an artist</div>
       <input
-        className='border-gray-400 border-2 rounded-md h-10 outline-none px-2'
+        className='rounded-md h-10 outline-none px-2 bg-gray-600'
         onKeyDown={handleKeyDown}
         value={query}
         onChange={handleSearch}
       ></input>
       {searchedArtists.length > 0 && (
-        <div className='absolute p-4 bg-gray-200'>
+        <div className='absolute flex flex-wrap mt-4 p-4 bg-gray-600'>
           {searchedArtists.map((artist: any) => (
             <Artist addArtist={addArtist} artist={artist} />
           ))}

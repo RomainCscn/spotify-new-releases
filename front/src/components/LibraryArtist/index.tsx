@@ -33,25 +33,20 @@ export const LibraryArtist = ({
   };
 
   return (
-    <div className='bg-gray-200 mb-4'>
-      <div className='flex items-center'>
-        <a href={url}>
-          <img className='mr-2' width='100' src={image} alt={name} />
-          {name}
-        </a>
-      </div>
-      <div className='flex items-center'>
-        <a href={lastAlbum.url}>
-          <img
-            className='mr-2'
-            width='100'
-            src={lastAlbum.image}
-            alt={lastAlbum.name}
-          />
-          {lastAlbum.name}
-        </a>
-      </div>
-      <div className='cursor-pointer' onClick={deleteArtist}>
+    <div className='mr-4 mb-4 w-1/5'>
+      <a className='hover:text-teal-200' href={lastAlbum.url}>
+        <img
+          className='mr-2'
+          width='200'
+          src={lastAlbum.image}
+          alt={lastAlbum.name}
+        />
+        <div className='my-1 font-semibold'>{lastAlbum.name}</div>
+      </a>
+      <a className='hover:text-teal-200' href={url}>
+        <div className='mb-1 font-thin'>{name}</div>
+      </a>
+      <div className='cursor-pointer hover:text-red-500' onClick={deleteArtist}>
         Remove
       </div>
     </div>

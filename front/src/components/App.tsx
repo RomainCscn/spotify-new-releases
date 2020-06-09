@@ -19,20 +19,22 @@ const App = () => {
 
   return (
     <div className='container mx-auto'>
-      <div className='text-2xl mb-8'>
+      <div className='text-2xl my-8'>
         Add artists to your collection to be informed when they release a new
         album
       </div>
       <Search className='mb-16' setShouldRefresh={setShouldRefresh} />
       <div>
-        <div className='text-xl'>Your library</div>
-        {libraryArtists.length > 0 &&
-          libraryArtists.map((artist: Artist) => (
-            <LibraryArtist
-              setShouldRefresh={setShouldRefresh}
-              artist={artist}
-            />
-          ))}
+        <div className='text-3xl mb-6'>Your library</div>
+        <div className='flex flex-wrap'>
+          {libraryArtists.length > 0 &&
+            libraryArtists.map((artist: Artist) => (
+              <LibraryArtist
+                setShouldRefresh={setShouldRefresh}
+                artist={artist}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );
