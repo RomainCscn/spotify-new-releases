@@ -9,11 +9,31 @@ type SpotifyContent = {
   url: string;
 };
 
-export type Artist = SpotifyContent & { lastAlbum: SpotifyContent };
+export type Artist = SpotifyContent & {
+  lastAlbum: SpotifyContent & { releaseDate: string };
+};
 
-export const LibraryArtist = ({
+const Overlay = ({
+  deleteArtist,
+  releaseDate,
+}: {
+  deleteArtist: (event: any) => Promise<void>;
+  releaseDate: string;
+}) => (
+  <div className='bg-black bg-opacity-75 p-4 flex flex-col justify-between items-end library-album-image-overlay'>
+    <div className='text-gray-100'>{releaseDate.split('T')[0]}</div>
+    <div
+      className='cursor-pointer text-gray-100 hover:text-red-500'
+      onClick={deleteArtist}
+    >
+      Remove
+    </div>
+  </div>
+);
+
+export const AlbumItem = ({
   setShouldRefresh,
-  artist: { id, image, name, url, lastAlbum },
+  artist: { id, name, url, lastAlbum },
 }: {
   setShouldRefresh: (shouldRefresh: boolean) => void;
   artist: Artist;
@@ -59,17 +79,11 @@ export const LibraryArtist = ({
           alt={lastAlbum.name}
         />
         {showOverlay && (
-          <div className='bg-black bg-opacity-75 p-4 flex justify-center items-center library-album-image-overlay'>
-            <div
-              className='cursor-pointer text-gray-100 hover:text-red-500'
-              onClick={deleteArtist}
-            >
-              Remove
-            </div>
-          </div>
+          <Overlay
+            deleteArtist={deleteArtist}
+            releaseDate={lastAlbum.releaseDate}
+          />
         )}
-      </a>
-      <a className='grid hover:text-teal-200' href={lastAlbum.url}>
         <div className='my-1 font-semibold'>{lastAlbum.name}</div>
       </a>
       <a className='hover:text-teal-200' href={url}>

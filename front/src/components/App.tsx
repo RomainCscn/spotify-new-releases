@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 
-import { Artist, LibraryArtist } from './LibraryArtist';
+import { Artist, AlbumItem } from './Album';
 import Search from './Search';
 
 const App = () => {
-  const [libraryArtists, setlibraryArtists] = useState([]);
+  const [library, setLibrary] = useState([]);
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
   useEffect(() => {
     const getArtists = async () => {
       const result = await fetch('http://0.0.0.0:8000/artists');
-      setlibraryArtists(await result.json());
+      setLibrary(await result.json());
       setShouldRefresh(false);
     };
 
@@ -27,12 +27,9 @@ const App = () => {
       <div>
         <div className='text-3xl mb-6'>Your library</div>
         <div className='flex flex-wrap'>
-          {libraryArtists.length > 0 &&
-            libraryArtists.map((artist: Artist) => (
-              <LibraryArtist
-                setShouldRefresh={setShouldRefresh}
-                artist={artist}
-              />
+          {library.length > 0 &&
+            library.map((artist: Artist) => (
+              <AlbumItem setShouldRefresh={setShouldRefresh} artist={artist} />
             ))}
         </div>
       </div>
