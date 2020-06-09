@@ -8,13 +8,13 @@ const Artist = ({
   artist: any;
 }) => (
   <div
-    className='flex items-center cursor-pointer mb-2 w-1/3'
+    className='flex items-center cursor-pointer mb-2 w-1/3 hover:text-teal-200'
     onClick={() => addArtist(artist.id)}
     key={artist.id}
   >
     {artist.images.length > 0 ? (
       <img
-        className='h-16 w-16 mr-2'
+        className='h-16 w-16 mr-2 rounded-full'
         alt={artist.name}
         src={artist.images[artist.images.length - 1].url}
       />
@@ -87,7 +87,7 @@ const Search = ({
         onChange={handleSearch}
       ></input>
       {searchedArtists.length > 0 && (
-        <div className='absolute flex flex-wrap mt-4 p-4 bg-gray-600'>
+        <div className='absolute flex flex-wrap mt-4 p-4 bg-gray-900'>
           {searchedArtists.map((artist: any) => (
             <Artist addArtist={addArtist} artist={artist} />
           ))}
