@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 
-import { Artist, AlbumItem } from './Album';
+import AlbumItem from './Album';
+import ArtistItem from './Artist';
 import Search from './Search';
+
+import { Artist, View } from './types';
+import ViewSelect from './ViewSelect';
 
 const App = () => {
   const [library, setLibrary] = useState([]);
+  const [view, setView] = useState(View.ALBUMS);
   const [shouldRefresh, setShouldRefresh] = useState(false);
 
   useEffect(() => {
@@ -17,6 +22,12 @@ const App = () => {
     getArtists();
   }, [shouldRefresh]);
 
+  const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setView(View[event.currentTarget.value as keyof typeof View]);
+  };
+
+  console.log(view);
+
   return (
     <div className='container mx-auto'>
       <div className='text-2xl my-8'>
@@ -25,13 +36,34 @@ const App = () => {
       </div>
       <Search className='mb-16' setShouldRefresh={setShouldRefresh} />
       <div>
-        <div className='text-3xl mb-6'>Your library</div>
-        <div className='flex flex-wrap'>
-          {library.length > 0 &&
-            library.map((artist: Artist) => (
-              <AlbumItem setShouldRefresh={setShouldRefresh} artist={artist} />
-            ))}
+        <div className='flex justify-between mb-6'>
+          <div className='text-3xl'>Your library</div>
+          <ViewSelect view={view} handleViewChange={handleViewChange} />
         </div>
+        {view === View.ALBUMS && (
+          <div className='flex flex-wrap'>
+            {library.length > 0 &&
+              library.map((artist: Artist) => (
+                <AlbumItem
+                  key={artist.id}
+                  setShouldRefresh={setShouldRefresh}
+                  artist={artist}
+                />
+              ))}
+          </div>
+        )}
+        {view === View.ARTISTS && (
+          <div className='flex flex-wrap'>
+            {library.length > 0 &&
+              library.map((artist: Artist) => (
+                <ArtistItem
+                  key={artist.id}
+                  setShouldRefresh={setShouldRefresh}
+                  artist={artist}
+                />
+              ))}
+          </div>
+        )}
       </div>
     </div>
   );

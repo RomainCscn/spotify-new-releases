@@ -1,37 +1,12 @@
 import React, { useState } from 'react';
 
+import Overlay from '../Overlay';
+import { Artist } from '../types';
+import { deleteArtist } from '../utils';
+
 import './styles.css';
 
-type SpotifyContent = {
-  id: string;
-  image: string;
-  name: string;
-  url: string;
-};
-
-export type Artist = SpotifyContent & {
-  lastAlbum: SpotifyContent & { releaseDate: string };
-};
-
-const Overlay = ({
-  deleteArtist,
-  releaseDate,
-}: {
-  deleteArtist: (event: any) => Promise<void>;
-  releaseDate: string;
-}) => (
-  <div className='bg-black bg-opacity-75 p-4 flex flex-col justify-between items-end library-album-image-overlay'>
-    <div className='text-gray-100'>{releaseDate.split('T')[0]}</div>
-    <div
-      className='cursor-pointer text-gray-100 hover:text-red-500'
-      onClick={deleteArtist}
-    >
-      Remove
-    </div>
-  </div>
-);
-
-export const AlbumItem = ({
+const AlbumItem = ({
   setShouldRefresh,
   artist: { id, name, url, lastAlbum },
 }: {
@@ -39,23 +14,6 @@ export const AlbumItem = ({
   artist: Artist;
 }) => {
   const [showOverlay, setShowOverlay] = useState(false);
-
-  const deleteArtist = async (event: any) => {
-    event.preventDefault();
-    try {
-      await fetch('http://0.0.0.0:8000/artist', {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id }),
-      });
-      setShouldRefresh(true);
-    } catch (e) {
-      console.log('Cannot delete artist');
-    }
-  };
 
   const handleOver = () => {
     setShowOverlay(true);
@@ -80,7 +38,7 @@ export const AlbumItem = ({
         />
         {showOverlay && (
           <Overlay
-            deleteArtist={deleteArtist}
+            deleteArtist={(event) => deleteArtist(event, setShouldRefresh, id)}
             releaseDate={lastAlbum.releaseDate}
           />
         )}
@@ -92,3 +50,5 @@ export const AlbumItem = ({
     </div>
   );
 };
+
+export default AlbumItem;
