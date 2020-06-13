@@ -13,3 +13,10 @@ export enum View {
 export type Artist = SpotifyContent & {
   lastAlbum: SpotifyContent & { releaseDate: string };
 };
+
+export enum ArtistsSort {
+  ALBUM = '+album',
+  ARTIST = '+artist',
+  RELEASE_ASC = '+releaseDate',
+  RELEASE_DESC = '-releaseDate',
+}

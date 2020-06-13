@@ -1,5 +1,6 @@
 import React, { ChangeEvent } from 'react';
 
+import Select from '../common/Select';
 import { View } from '../types';
 
 const ViewSelect = ({
@@ -9,16 +10,13 @@ const ViewSelect = ({
   handleViewChange: (event: ChangeEvent<HTMLSelectElement>) => void;
   view: View;
 }) => (
-  <select
-    className='appearance-none bg-gray-900 border border-gray-700 hover:border-gray-600 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline'
-    name='view'
-    id='view'
-    value={view}
-    onChange={handleViewChange}
-  >
-    <option value={View.ALBUMS}>Albums</option>
-    <option value={View.ARTISTS}>Artists</option>
-  </select>
+  <div>
+    <div className='mb-1 text-gray-400'>View</div>
+    <Select name='view' id='view' value={view} onChange={handleViewChange}>
+      <option value={View.ALBUMS}>Albums</option>
+      <option value={View.ARTISTS}>Artists</option>
+    </Select>
+  </div>
 );
 
 export default ViewSelect;
