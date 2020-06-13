@@ -4,8 +4,6 @@ import Overlay from '../Overlay';
 import { Artist } from '../types';
 import { deleteArtist } from '../utils';
 
-import './styles.css';
-
 const AlbumItem = ({
   setShouldRefresh,
   artist: { id, name, url, lastAlbum },

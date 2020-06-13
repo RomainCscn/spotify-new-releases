@@ -35,11 +35,12 @@ const App = () => {
 
   return (
     <div className='container mx-auto'>
-      <div className='text-2xl my-8'>
+      <div className='text-4xl mt-8 mb-4 font-bold'>Spotify Releases</div>
+      <div className='text-xl mb-16'>
         Add artists to your collection to be informed when they release a new
-        album
+        album.
       </div>
-      <Search className='mb-16' setShouldRefresh={setShouldRefresh} />
+      <Search className='' setShouldRefresh={setShouldRefresh} />
       <div>
         <div className='flex items-end justify-between mb-6'>
           <div className='text-3xl'>Your library</div>

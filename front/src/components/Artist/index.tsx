@@ -24,13 +24,13 @@ const ArtistItem = ({
   return (
     <div className='flex flex-col items-center mb-8 w-1/5'>
       <a
-        className='grid'
+        className='grid text-center hover:text-teal-200'
         onMouseEnter={handleOver}
         onMouseLeave={handleOut}
         href={artist.url}
       >
         <img
-          className='rounded-full w-32 library-album-image'
+          className='rounded-full w-32 h-32 object-cover library-album-image'
           src={artist.image}
           alt={artist.name}
         />
@@ -43,9 +43,7 @@ const ArtistItem = ({
             releaseDate={artist.lastAlbum.releaseDate}
           />
         )}
-      </a>
-      <a className='font-semibold mt-2 hover:text-teal-200' href={artist.url}>
-        {artist.name}
+        <div className='font-semibold mt-2'>{artist.name}</div>
       </a>
       <a className='hover:text-teal-200' href={artist.lastAlbum.url}>
         <div className='font-thin text-sm'>

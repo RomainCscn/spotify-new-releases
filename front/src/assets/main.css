@@ -14348,6 +14348,11 @@ body {
   color: rgb(247, 250, 252);
 }
 
+.library-album-image,
+.library-album-image-overlay {
+  grid-area: 1 / 1;
+}
+
 @media (min-width: 640px) {
   .sm\:space-y-0 > :not(template) ~ :not(template) {
     --space-y-reverse: 0;

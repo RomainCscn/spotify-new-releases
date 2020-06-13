@@ -79,7 +79,7 @@ const Search = ({
 
   return (
     <div className={`${className} relative`}>
-      <div className=''>Add an artist</div>
+      <div>Add a new artist</div>
       <input
         className='rounded-md h-10 outline-none px-2 bg-gray-600'
         onKeyDown={handleKeyDown}
@@ -87,7 +87,7 @@ const Search = ({
         onChange={handleSearch}
       ></input>
       {searchedArtists.length > 0 && (
-        <div className='absolute flex flex-wrap mt-4 p-4 bg-gray-900'>
+        <div className='absolute flex flex-wrap rounded-t-none rounded-lg p-4 bg-gray-900'>
           {searchedArtists.map((artist: any) => (
             <Artist addArtist={addArtist} artist={artist} />
           ))}
