@@ -23,7 +23,12 @@ const ArtistItem = ({
 
   return (
     <div className='flex flex-col items-center mb-8 w-1/5'>
-      <div className='grid' onMouseEnter={handleOver} onMouseLeave={handleOut}>
+      <a
+        className='grid'
+        onMouseEnter={handleOver}
+        onMouseLeave={handleOut}
+        href={artist.url}
+      >
         <img
           className='rounded-full w-32 library-album-image'
           src={artist.image}
@@ -38,11 +43,15 @@ const ArtistItem = ({
             releaseDate={artist.lastAlbum.releaseDate}
           />
         )}
-      </div>
-      <div className='font-semibold mt-2'>{artist.name}</div>
-      <div className='font-thin text-sm'>
-        Last release: {artist.lastAlbum.releaseDate.split('T')[0]}
-      </div>
+      </a>
+      <a className='font-semibold mt-2 hover:text-teal-200' href={artist.url}>
+        {artist.name}
+      </a>
+      <a className='hover:text-teal-200' href={artist.lastAlbum.url}>
+        <div className='font-thin text-sm'>
+          Last release: {artist.lastAlbum.releaseDate.split('T')[0]}
+        </div>
+      </a>
     </div>
   );
 };
