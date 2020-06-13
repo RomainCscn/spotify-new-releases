@@ -9,11 +9,11 @@ import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import {
   addNewArtist,
   checkAllNewRelease,
-  deleteArtist,
-  getAllArtistsAndLastRelease,
 } from "./artist.ts";
-
+import { deleteArtist, getAllArtistsAndLastRelease } from "./queries.ts";
 import { getSearchedArtists } from "./spotify.ts";
+
+import { ArtistsSort } from "./types.ts";
 
 const router = new Router();
 
@@ -49,7 +49,8 @@ router
   })
   .get("/artists", async (context: RouterContext) => {
     try {
-      const artists = await getAllArtistsAndLastRelease();
+      const sort = <ArtistsSort> helpers.getQuery(context).sort;
+      const artists = await getAllArtistsAndLastRelease(sort);
       context.response.body = artists;
     } catch (e) {
       context.throw(400, e.message);

@@ -1,4 +1,10 @@
-import { Artist, ArtistFromSpotify } from "./types.ts";
+import {
+  Artist,
+  ArtistAndLastAlbum,
+  ArtistFromSpotify,
+  ArtistsSort,
+  sortType,
+} from "./types.ts";
 
 export const findArtistInAlbum = (
   id: string,
@@ -13,5 +19,21 @@ export const findArtistInAlbum = (
     name: artist.name,
     id: artist.id,
     url: artist.external_urls.spotify,
+  };
+};
+
+export const formatArtistAndAlbum = (row: string[]): ArtistAndLastAlbum => {
+  return {
+    id: row[0],
+    name: row[1],
+    url: row[2],
+    image: row[3],
+    lastAlbum: {
+      id: row[4],
+      name: row[5],
+      url: row[6],
+      releaseDate: row[7],
+      image: row[8],
+    },
   };
 };

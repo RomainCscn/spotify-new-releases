@@ -38,3 +38,20 @@ export interface ArtistAndLastAlbum {
   url: string;
   lastAlbum: Omit<Album, "artist">;
 }
+
+export type ArtistsSort =
+  | "+album"
+  | "-album"
+  | "+artist"
+  | "-artist"
+  | "+releaseDate"
+  | "-releaseDate";
+
+export const sortType: Record<ArtistsSort, string> = {
+  "+album": "lower(album.name) ASC",
+  "-album": "lower(album.name) DESC",
+  "+artist": "lower(artist.name) ASC",
+  "-artist": "lower(artist.name) DESC",
+  "+releaseDate": "album.release_date ASC",
+  "-releaseDate": "album.release_date DESC",
+};
