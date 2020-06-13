@@ -15,6 +15,7 @@ import {
   Artist,
   DbAlbum,
   Image,
+  ArtistAndLastAlbum,
 } from "./types.ts";
 
 const getNewRelease = async (
@@ -61,14 +62,14 @@ export const addNewArtist = async (id: string) => {
 };
 
 export const checkAllNewRelease = async () => {
-  const updatedArtist = [];
+  const updatedArtist: ArtistAndLastAlbum[] = [];
   const artists = await getAllArtists();
 
-  for (const { id, image, name, url } of artists) {
+  for (const { id, image = "", name, url } of artists) {
     const newRelease = await getNewRelease(id!);
     if (newRelease.isNewRelease) {
       updatedArtist.push(
-        { artist: { image, name, url }, lastAlbum: newRelease.lastRelease },
+        { id, image, name, url, lastAlbum: newRelease.lastRelease },
       );
       await insertLastAlbum(newRelease.lastRelease);
       await updateArtistLastAlbum(id!, newRelease.lastRelease.id);

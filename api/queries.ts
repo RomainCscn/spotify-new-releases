@@ -41,12 +41,12 @@ export const getArtistLastAlbum = async (
   };
 };
 
-export const getAllArtists = async (): Promise<Partial<Artist>[]> => {
+export const getAllArtists = async (): Promise<Artist[]> => {
   const result = await query(
     "SELECT * FROM artist;",
   );
 
-  return result.rowsOfObjects();
+  return <Artist[]> result.rowsOfObjects();
 };
 
 export const getAllArtistsAndLastRelease = async (
@@ -60,7 +60,7 @@ export const getAllArtistsAndLastRelease = async (
      ORDER BY ${sortType[sort]};`,
   );
 
-  return result.rows.map((row: any) => formatArtistAndAlbum(row));
+  return result.rows.map((row: string[]) => formatArtistAndAlbum(row));
 };
 
 export const deleteArtist = async (id: string) => {
