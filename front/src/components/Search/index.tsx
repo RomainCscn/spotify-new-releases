@@ -85,7 +85,7 @@ const Search = ({
         onKeyDown={handleKeyDown}
         value={query}
         onChange={handleSearch}
-      ></input>
+      />
       {searchedArtists.length > 0 && (
         <div className='absolute flex flex-wrap rounded-t-none rounded-lg p-4 bg-gray-900'>
           {searchedArtists.map((artist: any) => (

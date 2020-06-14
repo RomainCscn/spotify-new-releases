@@ -3,12 +3,14 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import AlbumItem from './Album';
 import ArtistItem from './Artist';
 import Search from './Search';
-
-import { Artist, ArtistsSort, View } from './types';
 import ViewSelect from './ViewSelect';
 import SortSelect from './SortSelect';
+import Settings from './Settings';
+
+import { Artist, ArtistsSort, View } from './types';
 
 const App = () => {
+  const [showSettings, setShowSettings] = useState(false);
   const [library, setLibrary] = useState([]);
   const [sort, setSort] = useState(ArtistsSort.ALBUM);
   const [view, setView] = useState(View.ALBUMS);
@@ -35,7 +37,15 @@ const App = () => {
 
   return (
     <div className='container mx-auto'>
-      <div className='text-4xl mt-8 mb-4 font-bold'>Spotify Releases</div>
+      <div className='flex justify-between items-center mt-8 mb-4'>
+        <div className='text-4xl font-bold'>Spotify Releases</div>
+        <div
+          className='cursor-pointer hover:text-gray-500'
+          onClick={() => setShowSettings(!showSettings)}
+        >
+          Settings
+        </div>
+      </div>
       <div className='text-xl mb-16'>
         Add artists to your collection to be informed when they release a new
         album.
@@ -74,6 +84,7 @@ const App = () => {
           </div>
         )}
       </div>
+      {showSettings && <Settings hide={() => setShowSettings(false)} />}
     </div>
   );
 };

@@ -6,13 +6,17 @@ import { ArtistsSort } from '../types';
 const SortSelect = ({
   handleSortChange,
   sort,
+  className,
+  isDefault,
 }: {
   handleSortChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-  sort: ArtistsSort;
+  sort: ArtistsSort | undefined;
+  className?: string;
+  isDefault?: boolean;
 }) => {
   return (
-    <div>
-      <div className='mb-1 text-gray-400'>Sort</div>
+    <div className={className}>
+      <div className='mb-1 text-gray-400'>{isDefault && 'Default '}Sort</div>
       <Select
         className='mr-2'
         name='sort'

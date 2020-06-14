@@ -6,12 +6,16 @@ import { View } from '../types';
 const ViewSelect = ({
   handleViewChange,
   view,
+  className,
+  isDefault,
 }: {
   handleViewChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-  view: View;
+  view: View | undefined;
+  className?: string;
+  isDefault?: boolean;
 }) => (
-  <div>
-    <div className='mb-1 text-gray-400'>View</div>
+  <div className={className}>
+    <div className='mb-1 text-gray-400'>{isDefault && 'Default '}View</div>
     <Select name='view' id='view' value={view} onChange={handleViewChange}>
       <option value={View.ALBUMS}>Albums</option>
       <option value={View.ARTISTS}>Artists</option>
