@@ -1,7 +1,7 @@
 import { SmtpClient } from "https://deno.land/x/smtp@0f32c74d18d7d01239a8a5b94abd9410a08a1d46/mod.ts";
 import { config } from "https://deno.land/x/dotenv/mod.ts";
 
-import { ArtistAndLastAlbum } from "../types/index.ts";
+import { ArtistAndLastAlbum } from "../types/artists.ts";
 
 const client = new SmtpClient();
 

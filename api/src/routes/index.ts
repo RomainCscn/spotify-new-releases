@@ -1,22 +1,24 @@
 import {
-  Application,
   Router,
   RouterContext,
   helpers,
+  Context,
 } from "https://deno.land/x/oak/mod.ts";
 
 import { addNewArtist, checkAllNewRelease } from "../services/artist.ts";
-import { deleteArtist, getAllArtistsAndLastRelease } from "../db/queries.ts";
+import {
+  deleteArtist,
+  getAllArtistsAndLastRelease,
+} from "../db/queries/artist.ts";
+import { getSettings, insertSettings } from "../db/queries/settings.ts";
 import { getSearchedArtists } from "../services/spotify.ts";
-import { ArtistsSort } from "../types/index.ts";
+import { ArtistsSort } from "../types/artists.ts";
 
 const router = new Router();
 
 router
   .post("/artist", async (context: RouterContext) => {
-    let {
-      value: { id },
-    } = await context.request.body();
+    const { value: { id } } = await context.request.body();
     try {
       await addNewArtist(id);
       context.response.status = 200;
@@ -25,9 +27,7 @@ router
     }
   })
   .delete("/artist", async (context: RouterContext) => {
-    let {
-      value: { id },
-    } = await context.request.body();
+    const { value: { id } } = await context.request.body();
     try {
       await deleteArtist(id);
       context.response.status = 204;
@@ -57,6 +57,22 @@ router
         helpers.getQuery(context).artist,
       );
       context.response.body = artists;
+    } catch (e) {
+      context.throw(400, e.message);
+    }
+  })
+  .get("/settings", async (context: RouterContext) => {
+    try {
+      const settings = await getSettings();
+      context.response.body = settings;
+    } catch (e) {
+      context.throw(400, e.message);
+    }
+  })
+  .post("/settings", async (context: RouterContext) => {
+    try {
+      const { value: { email, sort, view } } = await context.request.body();
+      insertSettings(email, sort, view);
     } catch (e) {
       context.throw(400, e.message);
     }

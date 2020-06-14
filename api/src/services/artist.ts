@@ -10,13 +10,13 @@ import {
   insertArtist,
   insertLastAlbum,
   updateArtistLastAlbum,
-} from "../db/queries.ts";
+} from "../db/queries/artist.ts";
 import {
   Artist,
   DbAlbum,
   Image,
   ArtistAndLastAlbum,
-} from "../types/index.ts";
+} from "../types/artists.ts";
 
 const getNewRelease = async (
   id: string,
