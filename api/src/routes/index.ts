@@ -4,16 +4,11 @@ import {
   RouterContext,
   helpers,
 } from "https://deno.land/x/oak/mod.ts";
-import { oakCors } from "https://deno.land/x/cors/mod.ts";
 
-import {
-  addNewArtist,
-  checkAllNewRelease,
-} from "./artist.ts";
-import { deleteArtist, getAllArtistsAndLastRelease } from "./queries.ts";
-import { getSearchedArtists } from "./spotify.ts";
-
-import { ArtistsSort } from "./types.ts";
+import { addNewArtist, checkAllNewRelease } from "../services/artist.ts";
+import { deleteArtist, getAllArtistsAndLastRelease } from "../db/queries.ts";
+import { getSearchedArtists } from "../services/spotify.ts";
+import { ArtistsSort } from "../types/index.ts";
 
 const router = new Router();
 
@@ -67,10 +62,4 @@ router
     }
   });
 
-const app = new Application();
-app.use(oakCors());
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-console.log("Server ready");
-await app.listen({ port: 8000 });
+export default router;

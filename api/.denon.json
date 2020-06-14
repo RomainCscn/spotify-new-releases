@@ -1,6 +1,6 @@
 {
   "files": [
-    "server.ts"
+    "src/index.ts"
   ],
   "quiet": false,
   "debug": true,

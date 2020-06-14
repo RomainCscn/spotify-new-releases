@@ -1,6 +1,7 @@
 import { config } from "https://deno.land/x/dotenv/mod.ts";
-import { ArtistFromSpotify, Album, Image } from "./types.ts";
-import { findArtistInAlbum } from "./utils.ts";
+
+import { ArtistFromSpotify, Album, Image } from "../types/index.ts";
+import { findArtistInAlbum } from "../utils/index.ts";
 
 interface Token {
   access_token: string;

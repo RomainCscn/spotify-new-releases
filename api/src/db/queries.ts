@@ -1,4 +1,4 @@
-import { query } from "./db.ts";
+import { query } from "./index.ts";
 import {
   ArtistsSort,
   Artist,
@@ -6,8 +6,8 @@ import {
   Album,
   DbAlbum,
   sortType,
-} from "./types.ts";
-import { formatArtistAndAlbum } from "./utils.ts";
+} from "../types/index.ts";
+import { formatArtistAndAlbum } from "../utils/index.ts";
 
 export const getArtist = async (
   id: string,

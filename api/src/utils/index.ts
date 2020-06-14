@@ -2,9 +2,7 @@ import {
   Artist,
   ArtistAndLastAlbum,
   ArtistFromSpotify,
-  ArtistsSort,
-  sortType,
-} from "./types.ts";
+} from "../types/index.ts";
 
 export const findArtistInAlbum = (
   id: string,
