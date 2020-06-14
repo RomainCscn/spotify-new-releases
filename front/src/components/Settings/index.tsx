@@ -79,7 +79,13 @@ const Settings = ({ hide }: { hide: () => void }) => {
       >
         <div className='text-2xl mb-8'>Settings</div>
         <div className='mb-4'>
-          <div>Email</div>
+          <div>
+            Email
+            <span className='text-xs'>
+              {' '}
+              - used to receive new releases recap
+            </span>
+          </div>
           <input
             className='rounded-md h-10 w-full sm:w-3/4 outline-none px-2 bg-gray-600'
             value={email}
