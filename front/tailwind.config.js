@@ -1,5 +1,9 @@
 module.exports = {
-  theme: {},
+  theme: {
+    opacity: {
+      '90': '.9',
+    },
+  },
   variants: {},
   plugins: [],
 };

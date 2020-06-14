@@ -68,7 +68,7 @@ const Settings = ({ hide }: { hide: () => void }) => {
   return (
     <div className='fixed bottom-0 inset-x-0 px-4 pb-4 sm:inset-0 sm:flex sm:items-center sm:justify-center'>
       <div className='fixed inset-0 transition-opacity'>
-        <div className='absolute inset-0 bg-gray-700 opacity-75'></div>
+        <div className='absolute inset-0 bg-gray-700 opacity-90'></div>
       </div>
       <div
         ref={ref}
