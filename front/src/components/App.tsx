@@ -10,6 +10,7 @@ import Settings from './Settings';
 import { Artist, ArtistsSort, View } from './types';
 
 const App = () => {
+  const [isSettingsLoading, setIsSettingsLoading] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [library, setLibrary] = useState([]);
   const [sort, setSort] = useState(ArtistsSort.ALBUM);
@@ -17,9 +18,21 @@ const App = () => {
   const [shouldRefresh, setShouldRefresh] = useState(true);
 
   useEffect(() => {
+    const getSettings = async () => {
+      const response = await fetch(`http://0.0.0.0:8000/settings`);
+      const { sort, view } = await response.json();
+      setIsSettingsLoading(false);
+      if (sort) setSort(sort);
+      if (view) setView(view);
+    };
+
+    getSettings();
+  }, []);
+
+  useEffect(() => {
     const getArtists = async () => {
-      const result = await fetch(`http://0.0.0.0:8000/artists?sort=${sort}`);
-      setLibrary(await result.json());
+      const response = await fetch(`http://0.0.0.0:8000/artists?sort=${sort}`);
+      setLibrary(await response.json());
       setShouldRefresh(false);
     };
 
@@ -51,39 +64,41 @@ const App = () => {
         album.
       </div>
       <Search className='' setShouldRefresh={setShouldRefresh} />
-      <div>
-        <div className='flex items-end justify-between mb-6'>
-          <div className='text-3xl'>Your library</div>
-          <div className='flex'>
-            <SortSelect sort={sort} handleSortChange={handleSortChange} />
-            <ViewSelect view={view} handleViewChange={handleViewChange} />
+      {!isSettingsLoading && (
+        <div>
+          <div className='flex items-end justify-between mb-6'>
+            <div className='text-3xl'>Your library</div>
+            <div className='flex'>
+              <SortSelect sort={sort} handleSortChange={handleSortChange} />
+              <ViewSelect view={view} handleViewChange={handleViewChange} />
+            </div>
           </div>
+          {view === View.ALBUMS && (
+            <div className='flex flex-wrap'>
+              {library.length > 0 &&
+                library.map((artist: Artist) => (
+                  <AlbumItem
+                    key={artist.id}
+                    setShouldRefresh={setShouldRefresh}
+                    artist={artist}
+                  />
+                ))}
+            </div>
+          )}
+          {view === View.ARTISTS && (
+            <div className='flex flex-wrap'>
+              {library.length > 0 &&
+                library.map((artist: Artist) => (
+                  <ArtistItem
+                    key={artist.id}
+                    setShouldRefresh={setShouldRefresh}
+                    artist={artist}
+                  />
+                ))}
+            </div>
+          )}
         </div>
-        {view === View.ALBUMS && (
-          <div className='flex flex-wrap'>
-            {library.length > 0 &&
-              library.map((artist: Artist) => (
-                <AlbumItem
-                  key={artist.id}
-                  setShouldRefresh={setShouldRefresh}
-                  artist={artist}
-                />
-              ))}
-          </div>
-        )}
-        {view === View.ARTISTS && (
-          <div className='flex flex-wrap'>
-            {library.length > 0 &&
-              library.map((artist: Artist) => (
-                <ArtistItem
-                  key={artist.id}
-                  setShouldRefresh={setShouldRefresh}
-                  artist={artist}
-                />
-              ))}
-          </div>
-        )}
-      </div>
+      )}
       {showSettings && <Settings hide={() => setShowSettings(false)} />}
     </div>
   );
