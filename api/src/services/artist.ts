@@ -1,4 +1,5 @@
 import { formatMail, sendMail } from "./mail.ts";
+import { sendNotification } from "./notification.ts";
 import {
   getArtistLastAlbum as getSpotifyArtistLastAlbum,
   getArtistImages,
@@ -80,6 +81,11 @@ export const checkAllNewRelease = async () => {
     sendMail(
       "New releases from your favorite artists!",
       formatMail(updatedArtist),
+    );
+    sendNotification(
+      updatedArtist.map((artist) =>
+        `${artist.name} released ${artist.lastAlbum.name} on the ${artist.lastAlbum.releaseDate}`
+      ).join("\n"),
     );
   }
 
